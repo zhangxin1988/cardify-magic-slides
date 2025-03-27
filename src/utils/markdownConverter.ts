@@ -6,7 +6,8 @@ import DOMPurify from 'dompurify';
  * Converts markdown text to HTML
  */
 export const markdownToHtml = (markdown: string): string => {
-  const html = marked.parse(markdown);
+  // Using marked.parse instead of marked which returns a Promise in newer versions
+  const html = marked.parse(markdown, { async: false }) as string;
   return DOMPurify.sanitize(html);
 };
 
