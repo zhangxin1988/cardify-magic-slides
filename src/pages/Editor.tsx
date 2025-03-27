@@ -5,8 +5,7 @@ import {
   FileText, 
   Copy, 
   Share2, 
-  ChevronDown,
-  Settings
+  ChevronDown
 } from "lucide-react";
 import { toast } from "sonner";
 import { markdownToHtml, exportToHtml, exportToPdf, getDefaultMarkdown } from "../utils/markdownConverter";
@@ -21,11 +20,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import Navbar from "@/components/Navbar";
 
 enum DevicePreview {
@@ -122,7 +116,7 @@ const Editor = () => {
     <div className="h-screen flex flex-col pt-14">
       <div className="flex h-full">
         {/* Editor Section */}
-        <div className="w-full md:w-1/2 h-full border-r border-border flex flex-col">
+        <div className="w-full md:w-1/2 lg:w-1/3 h-full border-r border-border flex flex-col">
           <MarkdownEditor 
             value={markdown} 
             onChange={setMarkdown} 
@@ -130,7 +124,7 @@ const Editor = () => {
         </div>
         
         {/* Preview Section */}
-        <div className="w-full md:w-1/2 h-full flex flex-col bg-accent/5">
+        <div className="w-full md:w-1/2 lg:w-1/3 h-full flex flex-col bg-accent/5">
           <div className="relative h-full flex flex-col">
             <div className="absolute top-4 right-4 z-10 flex space-x-4">
               <DropdownMenu>
@@ -162,30 +156,6 @@ const Editor = () => {
               </DropdownMenu>
               
               <ThemeToggle />
-              
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="icon" className="bg-background/80 backdrop-blur-sm">
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent className="w-[350px] sm:w-[450px] overflow-y-auto">
-                  <CardSettings 
-                    width={width}
-                    height={height}
-                    zoom={zoom}
-                    autoSplit={autoSplit}
-                    activeStyle={activeStyle}
-                    styleOptions={styleOptions}
-                    onWidthChange={setWidth}
-                    onHeightChange={setHeight}
-                    onZoomChange={setZoom}
-                    onAutoSplitChange={setAutoSplit}
-                    onStyleChange={setActiveStyle}
-                    onExportLongImage={handleExportLongImage}
-                  />
-                </SheetContent>
-              </Sheet>
             </div>
 
             <CardPreview 
@@ -197,6 +167,24 @@ const Editor = () => {
               style={activeStyle}
             />
           </div>
+        </div>
+
+        {/* Settings Panel - Always visible */}
+        <div className="hidden lg:block w-1/3 h-full border-l border-border bg-background overflow-y-auto p-6">
+          <CardSettings 
+            width={width}
+            height={height}
+            zoom={zoom}
+            autoSplit={autoSplit}
+            activeStyle={activeStyle}
+            styleOptions={styleOptions}
+            onWidthChange={setWidth}
+            onHeightChange={setHeight}
+            onZoomChange={setZoom}
+            onAutoSplitChange={setAutoSplit}
+            onStyleChange={setActiveStyle}
+            onExportLongImage={handleExportLongImage}
+          />
         </div>
       </div>
     </div>
