@@ -5,23 +5,29 @@ import {
   FileText, 
   Copy, 
   Share2, 
-  Layout, 
-  LayoutGrid, 
-  AlignLeft,
-  PanelLeft,
-  PanelRight,
-  Smartphone
+  ChevronDown,
+  Settings
 } from "lucide-react";
 import { toast } from "sonner";
 import { markdownToHtml, exportToHtml, exportToPdf, getDefaultMarkdown } from "../utils/markdownConverter";
 import MarkdownEditor from "../components/MarkdownEditor";
 import CardPreview from "../components/CardPreview";
-
-enum ViewMode {
-  Split = "split",
-  EditOnly = "edit-only",
-  PreviewOnly = "preview-only"
-}
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Navbar from "@/components/Navbar";
 
 enum DevicePreview {
   Desktop = "desktop",
@@ -31,9 +37,13 @@ enum DevicePreview {
 const Editor = () => {
   const [markdown, setMarkdown] = useState("");
   const [html, setHtml] = useState("");
-  const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Split);
   const [devicePreview, setDevicePreview] = useState<DevicePreview>(DevicePreview.Desktop);
   const [isExporting, setIsExporting] = useState(false);
+  const [zoom, setZoom] = useState(100);
+  const [width, setWidth] = useState("440");
+  const [height, setHeight] = useState("586");
+  const [autoSplit, setAutoSplit] = useState(true);
+  const [activeStyle, setActiveStyle] = useState("Apple Notes");
   
   // Load saved markdown from localStorage or use default
   useEffect(() => {
@@ -93,116 +103,188 @@ const Editor = () => {
   const handleShareLink = () => {
     toast.info("Sharing feature coming soon!");
   };
-  
+
+  const styleOptions = [
+    "Apple Notes",
+    "Pop Art",
+    "Art deco",
+    "Glass Morphism",
+    "Warm & Soft",
+    "Minimal Gray",
+    "Dreamy Gradient",
+    "Fresh Nature"
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="border-b border-border">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-lg font-bold">MD2Card Editor</h1>
-          </div>
-          
-          <div className="flex items-center space-x-1">
-            <button 
-              onClick={() => setViewMode(ViewMode.Split)}
-              className={`p-2 rounded-md ${viewMode === ViewMode.Split ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'}`}
-              title="Split View"
-            >
-              <Layout size={18} />
-            </button>
-            <button 
-              onClick={() => setViewMode(ViewMode.EditOnly)}
-              className={`p-2 rounded-md ${viewMode === ViewMode.EditOnly ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'}`}
-              title="Editor Only"
-            >
-              <AlignLeft size={18} />
-            </button>
-            <button 
-              onClick={() => setViewMode(ViewMode.PreviewOnly)}
-              className={`p-2 rounded-md ${viewMode === ViewMode.PreviewOnly ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'}`}
-              title="Preview Only"
-            >
-              <LayoutGrid size={18} />
-            </button>
-            <div className="h-6 border-r border-border mx-1"></div>
-            <button 
-              onClick={() => setDevicePreview(DevicePreview.Desktop)}
-              className={`p-2 rounded-md ${devicePreview === DevicePreview.Desktop ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'}`}
-              title="Desktop Preview"
-            >
-              <PanelRight size={18} />
-            </button>
-            <button 
-              onClick={() => setDevicePreview(DevicePreview.Mobile)}
-              className={`p-2 rounded-md ${devicePreview === DevicePreview.Mobile ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'}`}
-              title="Mobile Preview"
-            >
-              <Smartphone size={18} />
-            </button>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <button 
-              className="p-2 text-sm flex items-center gap-1 hover:bg-accent rounded-md"
-              onClick={handleCopyToClipboard}
-              title="Copy Markdown"
-            >
-              <Copy size={16} />
-              <span className="hidden sm:inline">Copy</span>
-            </button>
-            <button 
-              className="p-2 text-sm flex items-center gap-1 hover:bg-accent rounded-md"
-              onClick={handleExportToHtml}
-              disabled={isExporting}
-              title="Export to HTML"
-            >
-              <FileText size={16} />
-              <span className="hidden sm:inline">HTML</span>
-            </button>
-            <button 
-              className="p-2 text-sm flex items-center gap-1 hover:bg-accent rounded-md"
-              onClick={handleExportToPdf}
-              disabled={isExporting}
-              title="Export to PDF"
-            >
-              <Download size={16} />
-              <span className="hidden sm:inline">PDF</span>
-            </button>
-            <button 
-              className="p-2 text-sm flex items-center gap-1 hover:bg-accent rounded-md"
-              onClick={handleShareLink}
-              title="Share"
-            >
-              <Share2 size={16} />
-              <span className="hidden sm:inline">Share</span>
-            </button>
-          </div>
+    <div className="h-screen flex flex-col pt-14">
+      <div className="flex h-full">
+        {/* Editor Section */}
+        <div className="w-full md:w-1/2 h-full border-r border-border flex flex-col">
+          <MarkdownEditor 
+            value={markdown} 
+            onChange={setMarkdown} 
+          />
         </div>
-      </header>
-      
-      <main className="flex-1 container mx-auto flex flex-col md:flex-row">
-        {viewMode !== ViewMode.PreviewOnly && (
-          <div 
-            className={`${viewMode === ViewMode.Split ? 'md:w-1/2' : 'w-full'} border-r border-border h-[calc(100vh-56px)]`}
-          >
-            <MarkdownEditor 
-              value={markdown} 
-              onChange={setMarkdown} 
-            />
-          </div>
-        )}
         
-        {viewMode !== ViewMode.EditOnly && (
-          <div 
-            className={`${viewMode === ViewMode.Split ? 'md:w-1/2' : 'w-full'} h-[calc(100vh-56px)]`}
-          >
+        {/* Preview Section */}
+        <div className="w-full md:w-1/2 h-full flex flex-col bg-accent/5">
+          <div className="relative h-full flex flex-col">
+            <div className="absolute top-4 right-4 z-10 flex space-x-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="bg-background/80 backdrop-blur-sm" size="sm">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                    <ChevronDown className="h-4 w-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleExportToHtml}>
+                    <FileText className="h-4 w-4 mr-2" />
+                    Export as HTML
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleExportToPdf}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Export as PDF
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleCopyToClipboard}>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy Markdown
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleShareLink}>
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Share Link
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              <ThemeToggle />
+              
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="icon" className="bg-background/80 backdrop-blur-sm">
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="w-[350px] sm:w-[450px] overflow-y-auto">
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-medium mb-4">Card Settings</h3>
+                      
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <Button variant="default" size="sm">Long Image</Button>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm">Auto Split</span>
+                            <Switch 
+                              checked={autoSplit} 
+                              onCheckedChange={setAutoSplit} 
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 flex items-center justify-center rounded-full border">
+                            <div className="w-2 h-2 rounded-full bg-primary"></div>
+                          </div>
+                          <span className="text-sm">Single card without splitting</span>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-medium">Size</h4>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="text-sm text-muted-foreground">Width</label>
+                              <div className="flex items-center gap-2">
+                                <div className="flex-1">
+                                  <input
+                                    type="text"
+                                    value={width}
+                                    onChange={(e) => setWidth(e.target.value)}
+                                    className="w-full px-2 py-1 text-sm border rounded-md"
+                                  />
+                                </div>
+                                <span className="text-sm text-muted-foreground">px</span>
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <label className="text-sm text-muted-foreground">Height</label>
+                              <div className="flex items-center gap-2">
+                                <div className="flex-1">
+                                  <input
+                                    type="text"
+                                    value={height}
+                                    onChange={(e) => setHeight(e.target.value)}
+                                    className="w-full px-2 py-1 text-sm border rounded-md"
+                                  />
+                                </div>
+                                <span className="text-sm text-muted-foreground">px</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <h4 className="text-sm font-medium">Editor.settings.overHidden</h4>
+                            <Switch />
+                          </div>
+                          
+                          <div className="relative">
+                            <select className="w-full px-2 py-2 text-sm border rounded-md appearance-none">
+                              <option>选择设计尺寸...</option>
+                            </select>
+                            <ChevronDown className="absolute right-2 top-2.5 h-4 w-4 opacity-50" />
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">100%</span>
+                          </div>
+                          <Slider
+                            defaultValue={[zoom]}
+                            max={200}
+                            min={50}
+                            step={5}
+                            onValueChange={(values) => setZoom(values[0])}
+                          />
+                        </div>
+                        
+                        <div className="space-y-4 mt-6">
+                          <h4 className="text-sm font-medium">Style Presets</h4>
+                          
+                          <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+                            {styleOptions.map((style) => (
+                              <div 
+                                key={style}
+                                className={`p-2 rounded-md cursor-pointer ${activeStyle === style ? 'bg-accent' : 'hover:bg-accent/50'}`}
+                                onClick={() => setActiveStyle(style)}
+                              >
+                                <span className="text-sm">{style}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+
             <CardPreview 
               html={html} 
               isMobile={devicePreview === DevicePreview.Mobile} 
+              width={parseInt(width)}
+              height={parseInt(height)}
+              zoom={zoom / 100}
             />
           </div>
-        )}
-      </main>
+        </div>
+      </div>
     </div>
   );
 };

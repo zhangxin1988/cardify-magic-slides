@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Editor from "./pages/Editor";
 import NotFound from "./pages/NotFound";
+import Navbar from "./components/Navbar";
 
 // Create the client
 const queryClient = new QueryClient();
@@ -20,12 +21,15 @@ function App() {  // Change to function declaration syntax
           <Toaster />
           <Sonner position="top-center" />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/editor" element={<Editor />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Navbar />
+            <div className="pt-14">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/editor" element={<Editor />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>

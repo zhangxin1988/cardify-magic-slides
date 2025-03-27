@@ -1,6 +1,10 @@
 
 import React, { useEffect, useRef } from "react";
-import { Braces, Hash, Bold, Italic, List, ListOrdered, Quote, Image, Link, Code } from "lucide-react";
+import { 
+  Heading1, Heading2, Heading3, Bold, Italic, Underline, 
+  Strikethrough, Link2, Image, List, ListOrdered, 
+  Code, BracketsSquare, Minus 
+} from "lucide-react";
 
 interface MarkdownEditorProps {
   value: string;
@@ -54,9 +58,17 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange }) => {
     let newCursorPos: number;
     
     switch (markdownSyntax) {
-      case 'heading':
+      case 'h1':
         newText = text.substring(0, start) + `# ${textToInsert}` + text.substring(end);
         newCursorPos = start + 2 + (selectedText ? selectedText.length : placeholder.length);
+        break;
+      case 'h2':
+        newText = text.substring(0, start) + `## ${textToInsert}` + text.substring(end);
+        newCursorPos = start + 3 + (selectedText ? selectedText.length : placeholder.length);
+        break;
+      case 'h3':
+        newText = text.substring(0, start) + `### ${textToInsert}` + text.substring(end);
+        newCursorPos = start + 4 + (selectedText ? selectedText.length : placeholder.length);
         break;
       case 'bold':
         newText = text.substring(0, start) + `**${textToInsert}**` + text.substring(end);
@@ -68,6 +80,16 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange }) => {
         newCursorPos = start + 1 + (selectedText ? selectedText.length : 0);
         if (!selectedText) newCursorPos = start + 1;
         break;
+      case 'underline':
+        newText = text.substring(0, start) + `<u>${textToInsert}</u>` + text.substring(end);
+        newCursorPos = start + 3 + (selectedText ? selectedText.length : 0);
+        if (!selectedText) newCursorPos = start + 3;
+        break;
+      case 'strikethrough':
+        newText = text.substring(0, start) + `~~${textToInsert}~~` + text.substring(end);
+        newCursorPos = start + 2 + (selectedText ? selectedText.length : 0);
+        if (!selectedText) newCursorPos = start + 2;
+        break;
       case 'list':
         newText = text.substring(0, start) + `- ${textToInsert}` + text.substring(end);
         newCursorPos = start + 2 + (selectedText ? selectedText.length : 0);
@@ -76,19 +98,15 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange }) => {
         newText = text.substring(0, start) + `1. ${textToInsert}` + text.substring(end);
         newCursorPos = start + 3 + (selectedText ? selectedText.length : 0);
         break;
-      case 'blockquote':
-        newText = text.substring(0, start) + `> ${textToInsert}` + text.substring(end);
-        newCursorPos = start + 2 + (selectedText ? selectedText.length : 0);
+      case 'link':
+        newText = text.substring(0, start) + `[${textToInsert}](url)` + text.substring(end);
+        newCursorPos = start + 1 + (selectedText ? selectedText.length : 0);
+        if (!selectedText) newCursorPos = start + 1;
         break;
       case 'image':
         newText = text.substring(0, start) + `![${textToInsert}](image_url)` + text.substring(end);
         newCursorPos = start + 2 + (selectedText ? selectedText.length : 0);
         if (!selectedText) newCursorPos = start + 2;
-        break;
-      case 'link':
-        newText = text.substring(0, start) + `[${textToInsert}](url)` + text.substring(end);
-        newCursorPos = start + 1 + (selectedText ? selectedText.length : 0);
-        if (!selectedText) newCursorPos = start + 1;
         break;
       case 'code':
         newText = text.substring(0, start) + `\`${textToInsert}\`` + text.substring(end);
@@ -98,6 +116,10 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange }) => {
       case 'codeblock':
         newText = text.substring(0, start) + `\`\`\`\n${textToInsert}\n\`\`\`` + text.substring(end);
         newCursorPos = start + 4 + (selectedText ? selectedText.length : 0);
+        break;
+      case 'hr':
+        newText = text.substring(0, start) + `---` + text.substring(end);
+        newCursorPos = start + 3;
         break;
       default:
         newText = text;
@@ -126,77 +148,112 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange }) => {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="border-b border-border p-2 flex items-center space-x-1 overflow-x-auto bg-background/50">
-        <button 
-          className="p-1.5 rounded hover:bg-accent"
-          onClick={() => insertMarkdown('heading', getSelectedText(), 'Heading')}
-          title="Heading"
-        >
-          <Hash size={16} />
-        </button>
-        <button 
-          className="p-1.5 rounded hover:bg-accent"
-          onClick={() => insertMarkdown('bold', getSelectedText(), 'Bold text')}
-          title="Bold"
-        >
-          <Bold size={16} />
-        </button>
-        <button 
-          className="p-1.5 rounded hover:bg-accent"
-          onClick={() => insertMarkdown('italic', getSelectedText(), 'Italic text')}
-          title="Italic"
-        >
-          <Italic size={16} />
-        </button>
-        <button 
-          className="p-1.5 rounded hover:bg-accent"
-          onClick={() => insertMarkdown('list', getSelectedText(), 'List item')}
-          title="Unordered List"
-        >
-          <List size={16} />
-        </button>
-        <button 
-          className="p-1.5 rounded hover:bg-accent"
-          onClick={() => insertMarkdown('ordered-list', getSelectedText(), 'List item')}
-          title="Ordered List"
-        >
-          <ListOrdered size={16} />
-        </button>
-        <button 
-          className="p-1.5 rounded hover:bg-accent"
-          onClick={() => insertMarkdown('blockquote', getSelectedText(), 'Blockquote')}
-          title="Blockquote"
-        >
-          <Quote size={16} />
-        </button>
-        <button 
-          className="p-1.5 rounded hover:bg-accent"
-          onClick={() => insertMarkdown('image', getSelectedText(), 'Image alt text')}
-          title="Image"
-        >
-          <Image size={16} />
-        </button>
-        <button 
-          className="p-1.5 rounded hover:bg-accent"
-          onClick={() => insertMarkdown('link', getSelectedText(), 'Link text')}
-          title="Link"
-        >
-          <Link size={16} />
-        </button>
-        <button 
-          className="p-1.5 rounded hover:bg-accent"
-          onClick={() => insertMarkdown('code', getSelectedText(), 'code')}
-          title="Inline Code"
-        >
-          <Code size={16} />
-        </button>
-        <button 
-          className="p-1.5 rounded hover:bg-accent"
-          onClick={() => insertMarkdown('codeblock', getSelectedText(), 'code block')}
-          title="Code Block"
-        >
-          <Braces size={16} />
-        </button>
+      <div className="border-b border-border bg-background/50 overflow-x-auto">
+        <div className="flex items-center h-10 px-2">
+          <button 
+            className="p-1.5 rounded hover:bg-accent"
+            onClick={() => insertMarkdown('h1', getSelectedText(), 'Heading 1')}
+            title="Heading 1"
+          >
+            <Heading1 size={18} />
+          </button>
+          <button 
+            className="p-1.5 rounded hover:bg-accent"
+            onClick={() => insertMarkdown('h2', getSelectedText(), 'Heading 2')}
+            title="Heading 2"
+          >
+            <Heading2 size={18} />
+          </button>
+          <button 
+            className="p-1.5 rounded hover:bg-accent"
+            onClick={() => insertMarkdown('h3', getSelectedText(), 'Heading 3')}
+            title="Heading 3"
+          >
+            <Heading3 size={18} />
+          </button>
+          <div className="h-5 w-px bg-border mx-1.5"></div>
+          <button 
+            className="p-1.5 rounded hover:bg-accent"
+            onClick={() => insertMarkdown('bold', getSelectedText(), 'Bold text')}
+            title="Bold"
+          >
+            <Bold size={18} />
+          </button>
+          <button 
+            className="p-1.5 rounded hover:bg-accent"
+            onClick={() => insertMarkdown('italic', getSelectedText(), 'Italic text')}
+            title="Italic"
+          >
+            <Italic size={18} />
+          </button>
+          <button 
+            className="p-1.5 rounded hover:bg-accent"
+            onClick={() => insertMarkdown('underline', getSelectedText(), 'Underlined text')}
+            title="Underline"
+          >
+            <Underline size={18} />
+          </button>
+          <button 
+            className="p-1.5 rounded hover:bg-accent"
+            onClick={() => insertMarkdown('strikethrough', getSelectedText(), 'Strikethrough text')}
+            title="Strikethrough"
+          >
+            <Strikethrough size={18} />
+          </button>
+          <div className="h-5 w-px bg-border mx-1.5"></div>
+          <button 
+            className="p-1.5 rounded hover:bg-accent"
+            onClick={() => insertMarkdown('link', getSelectedText(), 'Link text')}
+            title="Link"
+          >
+            <Link2 size={18} />
+          </button>
+          <button 
+            className="p-1.5 rounded hover:bg-accent"
+            onClick={() => insertMarkdown('image', getSelectedText(), 'Image alt text')}
+            title="Image"
+          >
+            <Image size={18} />
+          </button>
+          <div className="h-5 w-px bg-border mx-1.5"></div>
+          <button 
+            className="p-1.5 rounded hover:bg-accent"
+            onClick={() => insertMarkdown('list', getSelectedText(), 'List item')}
+            title="Bullet List"
+          >
+            <List size={18} />
+          </button>
+          <button 
+            className="p-1.5 rounded hover:bg-accent"
+            onClick={() => insertMarkdown('ordered-list', getSelectedText(), 'List item')}
+            title="Numbered List"
+          >
+            <ListOrdered size={18} />
+          </button>
+          <div className="h-5 w-px bg-border mx-1.5"></div>
+          <button 
+            className="p-1.5 rounded hover:bg-accent"
+            onClick={() => insertMarkdown('code', getSelectedText(), 'code')}
+            title="Inline Code"
+          >
+            <Code size={18} />
+          </button>
+          <button 
+            className="p-1.5 rounded hover:bg-accent"
+            onClick={() => insertMarkdown('codeblock', getSelectedText(), 'code block')}
+            title="Code Block"
+          >
+            <BracketsSquare size={18} />
+          </button>
+          <div className="h-5 w-px bg-border mx-1.5"></div>
+          <button 
+            className="p-1.5 rounded hover:bg-accent"
+            onClick={() => insertMarkdown('hr', getSelectedText())}
+            title="Horizontal Rule (Creates a new slide)"
+          >
+            <Minus size={18} />
+          </button>
+        </div>
       </div>
       
       <div className="flex-1 relative overflow-auto">
@@ -205,10 +262,13 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange }) => {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="w-full h-full p-4 outline-none resize-none font-mono text-sm bg-background"
+          className="w-full h-full p-4 outline-none resize-none font-mono text-sm leading-relaxed"
           spellCheck="false"
           placeholder="Type your markdown here..."
         />
+        <div className="absolute bottom-2 right-2 text-xs text-muted-foreground opacity-70">
+          Line numbers available in pro version
+        </div>
       </div>
     </div>
   );

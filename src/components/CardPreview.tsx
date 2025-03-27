@@ -5,9 +5,18 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 interface CardPreviewProps {
   html: string;
   isMobile: boolean;
+  width?: number;
+  height?: number;
+  zoom?: number;
 }
 
-const CardPreview: React.FC<CardPreviewProps> = ({ html, isMobile }) => {
+const CardPreview: React.FC<CardPreviewProps> = ({ 
+  html, 
+  isMobile, 
+  width = 440, 
+  height = 586, 
+  zoom = 1 
+}) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   
   // Split HTML into slides if it contains horizontal rules
@@ -26,31 +35,21 @@ const CardPreview: React.FC<CardPreviewProps> = ({ html, isMobile }) => {
   };
   
   return (
-    <div className="h-full flex flex-col">
-      <div className="border-b border-border p-2 flex items-center justify-between bg-background/50">
-        <span className="text-sm font-medium">Preview</span>
-        {slides.length > 1 && (
-          <div className="flex items-center">
-            <span className="text-xs text-muted-foreground">
-              Slide {currentSlide + 1} of {slides.length}
-            </span>
-          </div>
-        )}
-      </div>
-      
-      <div className="flex-1 flex items-center justify-center p-4 overflow-hidden bg-accent/10">
+    <div className="h-full flex flex-col items-center justify-center p-4 relative">
+      <div 
+        className="relative bg-white dark:bg-slate-900 rounded-lg shadow-lg overflow-auto"
+        style={{ 
+          width: `${width}px`,
+          height: `${height}px`,
+          transform: `scale(${zoom})`,
+          transformOrigin: 'center',
+          transition: 'transform 0.3s ease'
+        }}
+      >
         <div 
-          className={`relative ${isMobile ? 'w-[375px] h-[667px]' : 'w-full max-w-4xl'} flex items-center justify-center overflow-hidden`}
-        >
-          <div 
-            className={`bg-white dark:bg-slate-900 rounded-lg shadow-lg w-full h-full overflow-auto p-6 animate-scale-in`}
-          >
-            <div 
-              className="markdown-body"
-              dangerouslySetInnerHTML={{ __html: slides[currentSlide] || "" }}
-            />
-          </div>
-        </div>
+          className="markdown-body p-6"
+          dangerouslySetInnerHTML={{ __html: slides[currentSlide] || "" }}
+        />
       </div>
       
       {slides.length > 1 && (
