@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { 
   Download, 
@@ -11,6 +12,7 @@ import { toast } from "sonner";
 import { markdownToHtml, exportToHtml, exportToPdf, getDefaultMarkdown } from "../utils/markdownConverter";
 import MarkdownEditor from "../components/MarkdownEditor";
 import CardPreview from "../components/CardPreview";
+import CardSettings from "../components/CardSettings";
 import ThemeToggle from "../components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,9 +26,6 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navbar from "@/components/Navbar";
 
 enum DevicePreview {
@@ -44,6 +43,17 @@ const Editor = () => {
   const [height, setHeight] = useState("586");
   const [autoSplit, setAutoSplit] = useState(true);
   const [activeStyle, setActiveStyle] = useState("Apple Notes");
+  
+  const styleOptions = [
+    "Apple Notes",
+    "Pop Art",
+    "Art deco",
+    "Glass Morphism",
+    "Warm & Soft",
+    "Minimal Gray",
+    "Dreamy Gradient",
+    "Fresh Nature"
+  ];
   
   // Load saved markdown from localStorage or use default
   useEffect(() => {
@@ -104,16 +114,9 @@ const Editor = () => {
     toast.info("Sharing feature coming soon!");
   };
 
-  const styleOptions = [
-    "Apple Notes",
-    "Pop Art",
-    "Art deco",
-    "Glass Morphism",
-    "Warm & Soft",
-    "Minimal Gray",
-    "Dreamy Gradient",
-    "Fresh Nature"
-  ];
+  const handleExportLongImage = () => {
+    toast.info("Long image export coming soon!");
+  };
 
   return (
     <div className="h-screen flex flex-col pt-14">
@@ -167,110 +170,20 @@ const Editor = () => {
                   </Button>
                 </SheetTrigger>
                 <SheetContent className="w-[350px] sm:w-[450px] overflow-y-auto">
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-lg font-medium mb-4">Card Settings</h3>
-                      
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center">
-                          <Button variant="default" size="sm">Long Image</Button>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm">Auto Split</span>
-                            <Switch 
-                              checked={autoSplit} 
-                              onCheckedChange={setAutoSplit} 
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 flex items-center justify-center rounded-full border">
-                            <div className="w-2 h-2 rounded-full bg-primary"></div>
-                          </div>
-                          <span className="text-sm">Single card without splitting</span>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <h4 className="text-sm font-medium">Size</h4>
-                          
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className="text-sm text-muted-foreground">Width</label>
-                              <div className="flex items-center gap-2">
-                                <div className="flex-1">
-                                  <input
-                                    type="text"
-                                    value={width}
-                                    onChange={(e) => setWidth(e.target.value)}
-                                    className="w-full px-2 py-1 text-sm border rounded-md"
-                                  />
-                                </div>
-                                <span className="text-sm text-muted-foreground">px</span>
-                              </div>
-                            </div>
-                            
-                            <div>
-                              <label className="text-sm text-muted-foreground">Height</label>
-                              <div className="flex items-center gap-2">
-                                <div className="flex-1">
-                                  <input
-                                    type="text"
-                                    value={height}
-                                    onChange={(e) => setHeight(e.target.value)}
-                                    className="w-full px-2 py-1 text-sm border rounded-md"
-                                  />
-                                </div>
-                                <span className="text-sm text-muted-foreground">px</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <h4 className="text-sm font-medium">Editor.settings.overHidden</h4>
-                            <Switch />
-                          </div>
-                          
-                          <div className="relative">
-                            <select className="w-full px-2 py-2 text-sm border rounded-md appearance-none">
-                              <option>选择设计尺寸...</option>
-                            </select>
-                            <ChevronDown className="absolute right-2 top-2.5 h-4 w-4 opacity-50" />
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">100%</span>
-                          </div>
-                          <Slider
-                            defaultValue={[zoom]}
-                            max={200}
-                            min={50}
-                            step={5}
-                            onValueChange={(values) => setZoom(values[0])}
-                          />
-                        </div>
-                        
-                        <div className="space-y-4 mt-6">
-                          <h4 className="text-sm font-medium">Style Presets</h4>
-                          
-                          <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
-                            {styleOptions.map((style) => (
-                              <div 
-                                key={style}
-                                className={`p-2 rounded-md cursor-pointer ${activeStyle === style ? 'bg-accent' : 'hover:bg-accent/50'}`}
-                                onClick={() => setActiveStyle(style)}
-                              >
-                                <span className="text-sm">{style}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <CardSettings 
+                    width={width}
+                    height={height}
+                    zoom={zoom}
+                    autoSplit={autoSplit}
+                    activeStyle={activeStyle}
+                    styleOptions={styleOptions}
+                    onWidthChange={setWidth}
+                    onHeightChange={setHeight}
+                    onZoomChange={setZoom}
+                    onAutoSplitChange={setAutoSplit}
+                    onStyleChange={setActiveStyle}
+                    onExportLongImage={handleExportLongImage}
+                  />
                 </SheetContent>
               </Sheet>
             </div>
@@ -281,6 +194,7 @@ const Editor = () => {
               width={parseInt(width)}
               height={parseInt(height)}
               zoom={zoom / 100}
+              style={activeStyle}
             />
           </div>
         </div>

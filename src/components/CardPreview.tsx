@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CardPreviewProps {
@@ -8,6 +8,7 @@ interface CardPreviewProps {
   width?: number;
   height?: number;
   zoom?: number;
+  style?: string;
 }
 
 const CardPreview: React.FC<CardPreviewProps> = ({ 
@@ -15,7 +16,8 @@ const CardPreview: React.FC<CardPreviewProps> = ({
   isMobile, 
   width = 440, 
   height = 586, 
-  zoom = 1 
+  zoom = 1,
+  style = "Apple Notes"
 }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   
@@ -33,17 +35,39 @@ const CardPreview: React.FC<CardPreviewProps> = ({
       setCurrentSlide(currentSlide - 1);
     }
   };
+
+  // Get card style based on style preset
+  const getCardStyle = () => {
+    switch (style) {
+      case "Pop Art":
+        return "bg-gradient-to-br from-pink-400 to-purple-500 dark:from-pink-600 dark:to-purple-700 text-white";
+      case "Art deco":
+        return "bg-amber-50 dark:bg-amber-900 border border-amber-200 dark:border-amber-700";
+      case "Glass Morphism":
+        return "glass-card backdrop-blur";
+      case "Warm & Soft":
+        return "bg-gradient-to-br from-orange-50 to-rose-100 dark:from-orange-900/40 dark:to-rose-900/40";
+      case "Minimal Gray":
+        return "bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700";
+      case "Dreamy Gradient":
+        return "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/30 dark:via-indigo-900/30 dark:to-purple-900/30";
+      case "Fresh Nature":
+        return "bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/40 dark:to-emerald-900/40";
+      default: // Apple Notes
+        return "bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-800";
+    }
+  };
   
   return (
     <div className="h-full flex flex-col items-center justify-center p-4 relative">
       <div 
-        className="relative bg-white dark:bg-slate-900 rounded-lg shadow-lg overflow-auto"
+        className={`relative rounded-lg shadow-lg overflow-auto ${getCardStyle()}`}
         style={{ 
           width: `${width}px`,
           height: `${height}px`,
           transform: `scale(${zoom})`,
           transformOrigin: 'center',
-          transition: 'transform 0.3s ease'
+          transition: 'transform 0.3s ease, background 0.3s ease, border 0.3s ease'
         }}
       >
         <div 
@@ -66,6 +90,9 @@ const CardPreview: React.FC<CardPreviewProps> = ({
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
+          <span className="text-xs text-muted-foreground">
+            {currentSlide + 1} / {slides.length}
+          </span>
           <button 
             onClick={goToNextSlide}
             disabled={currentSlide === slides.length - 1}

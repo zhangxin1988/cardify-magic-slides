@@ -1,20 +1,54 @@
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm",
-      className
-    )}
-    {...props}
-  />
-))
+  React.HTMLAttributes<HTMLDivElement> & { preset?: string }
+>(({ className, preset, ...props }, ref) => {
+  let presetClass = "";
+  
+  if (preset) {
+    switch (preset) {
+      case "pop-art":
+        presetClass = "bg-gradient-to-br from-pink-400 to-purple-500 text-white";
+        break;
+      case "art-deco":
+        presetClass = "bg-amber-50 border border-amber-200";
+        break;
+      case "glass":
+        presetClass = "glass-card backdrop-blur";
+        break;
+      case "warm":
+        presetClass = "bg-gradient-to-br from-orange-50 to-rose-100";
+        break;
+      case "minimal":
+        presetClass = "bg-gray-50 border border-gray-200";
+        break;
+      case "dreamy":
+        presetClass = "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50";
+        break;
+      case "nature":
+        presetClass = "bg-gradient-to-br from-green-50 to-emerald-100";
+        break;
+      default:
+        presetClass = "bg-white dark:bg-slate-900";
+    }
+  }
+  
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "rounded-lg border bg-card text-card-foreground shadow-sm",
+        presetClass,
+        className
+      )}
+      {...props}
+    />
+  )
+})
 Card.displayName = "Card"
 
 const CardHeader = React.forwardRef<
