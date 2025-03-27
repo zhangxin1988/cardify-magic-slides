@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { 
   Download, 
@@ -12,6 +11,7 @@ import { toast } from "sonner";
 import { markdownToHtml, exportToHtml, exportToPdf, getDefaultMarkdown } from "../utils/markdownConverter";
 import MarkdownEditor from "../components/MarkdownEditor";
 import CardPreview from "../components/CardPreview";
+import ThemeToggle from "../components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

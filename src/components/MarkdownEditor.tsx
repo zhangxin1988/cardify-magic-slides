@@ -1,9 +1,8 @@
-
 import React, { useEffect, useRef } from "react";
 import { 
   Heading1, Heading2, Heading3, Bold, Italic, Underline, 
   Strikethrough, Link2, Image, List, ListOrdered, 
-  Code, BracketsSquare, Minus 
+  Code, Braces, Minus 
 } from "lucide-react";
 
 interface MarkdownEditorProps {
@@ -86,7 +85,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange }) => {
         if (!selectedText) newCursorPos = start + 3;
         break;
       case 'strikethrough':
-        newText = text.substring(0, start) + `~~${textToInsert}~~` + text.substring(end);
+        newText = text.substring(0,start) + `~~${textToInsert}~~` + text.substring(end);
         newCursorPos = start + 2 + (selectedText ? selectedText.length : 0);
         if (!selectedText) newCursorPos = start + 2;
         break;
@@ -128,7 +127,6 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange }) => {
     
     onChange(newText);
     
-    // Set cursor position
     setTimeout(() => {
       if (textareaRef.current) {
         textareaRef.current.focus();
@@ -243,7 +241,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange }) => {
             onClick={() => insertMarkdown('codeblock', getSelectedText(), 'code block')}
             title="Code Block"
           >
-            <BracketsSquare size={18} />
+            <Braces size={18} />
           </button>
           <div className="h-5 w-px bg-border mx-1.5"></div>
           <button 
